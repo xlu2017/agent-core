@@ -109,7 +109,7 @@ describe("Concurrency — Parallel Timeline Writes", () => {
     // Verify timeline has events for all 100 executions
     const timelineRes = await app.inject({
       method: "GET",
-      url: `/sessions/${sessionId}/timeline`,
+      url: `/sessions/${sessionId}/timeline?limit=500`,
     });
     const events = timelineRes.json().events;
     // Each execution generates 3 events (requested, validated, executed)

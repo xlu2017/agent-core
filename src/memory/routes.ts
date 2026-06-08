@@ -9,7 +9,7 @@ import {
   MemoryIngestInput,
   MemoryRecallInput,
 } from "../schemas/memory.js";
-import { isDeepSeekConfigured, DeepSeekClient, llmJson } from "../llm/index.js";
+import { isDeepSeekConfigured, isGeminiConfigured, DeepSeekClient, GeminiClient, llmJson } from "../llm/index.js";
 import { getProvider } from "../providers/registry.js";
 import { Mem0MemoryProvider } from "../providers/adapters/Mem0MemoryProvider.js";
 
@@ -38,13 +38,16 @@ export async function memoryRoutes(app: FastifyInstance): Promise<void> {
   app.post("/memory/extract", async (req) => {
     const input = MemoryExtractInput.parse(req.body);
 
-    if (isDeepSeekConfigured() && process.env.ENABLE_LLM_EXTRACT === "true") {
+    // LLM extraction is the default path when any LLM is configured
+    const llmConfigured = isDeepSeekConfigured() || isGeminiConfigured();
+    if (llmConfigured) {
       const llmResult = await extractWithLLM(input.text);
       if (llmResult) {
         return { session_id: input.session_id, candidates: llmResult };
       }
     }
 
+    // Fallback to keyword extraction when no LLM is available
     const candidates = extractCandidates(input.text);
     return {
       session_id: input.session_id,
@@ -223,7 +226,11 @@ export async function memoryRoutes(app: FastifyInstance): Promise<void> {
 async function extractWithLLM(
   text: string,
 ): Promise<Array<{ content: string; confidence: number; scope?: string }> | null> {
-  const client = new DeepSeekClient();
+  // Prefer DeepSeek when configured (lower cost), fall back to Gemini
+  const client: import("../llm/index.js").LLMClient = isDeepSeekConfigured()
+    ? new DeepSeekClient()
+    : new GeminiClient();
+
   const result = await llmJson(client, MemoryExtractionResult, [
     {
       role: "system",
