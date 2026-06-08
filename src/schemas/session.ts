@@ -19,13 +19,7 @@ export const SessionCloseInput = z.object({
   summary: z.string().optional(),
 });
 
-export const SessionTimelineInput = z.object({
-  cursor: z.string().optional(),
-  limit: z.coerce.number().int().min(1).max(200).default(50),
-});
-
 export type SessionCreateInputType = z.infer<typeof SessionCreateInput>;
 export type SessionEventInputType = z.infer<typeof SessionEventInput>;
 export type SessionListInputType = z.infer<typeof SessionListInput>;
 export type SessionCloseInputType = z.infer<typeof SessionCloseInput>;
-export type SessionTimelineInputType = z.infer<typeof SessionTimelineInput>;

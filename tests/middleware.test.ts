@@ -29,7 +29,7 @@ describe("Auth Middleware", () => {
     it("rejects requests without API key", async () => {
       const res = await app.inject({ method: "GET", url: "/test" });
       expect(res.statusCode).toBe(401);
-      expect(res.json().code).toBe("AUTH_MISSING_KEY");
+      expect(res.json().code).toBe("AUTH_INVALID_KEY");
     });
 
     it("accepts requests with x-api-key header", async () => {

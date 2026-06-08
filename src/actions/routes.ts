@@ -403,55 +403,6 @@ export async function actionRoutes(app: FastifyInstance): Promise<void> {
     return { action_name, ...getActionStats(action_name) };
   });
 
-  /**
-   * GET /actions/analytics — Aggregate outcome analytics across all actions.
-   * Returns success rates, average durations, and total counts per action.
-   * Enables data-driven action recommendations and progressive skill learning.
-   */
-  app.get("/actions/analytics", async (req) => {
-    const query = req.query as Record<string, string>;
-    const limit = Math.min(Number(query.limit) || 50, 200);
-    const minTotal = Number(query.min_total) || 0;
-
-    const db = (await import("../db.js")).getDb();
-    const rows = db.prepare(`
-      SELECT
-        action_name,
-        COUNT(*) as total,
-        COALESCE(SUM(CASE WHEN status = 'succeeded' THEN 1 ELSE 0 END), 0) as succeeded,
-        COALESCE(SUM(CASE WHEN status = 'failed' THEN 1 ELSE 0 END), 0) as failed,
-        COALESCE(AVG(duration_ms), 0) as avg_duration_ms,
-        COALESCE(MAX(duration_ms), 0) as max_duration_ms,
-        COALESCE(MIN(duration_ms), 0) as min_duration_ms
-      FROM action_outcomes
-      GROUP BY action_name
-      HAVING total >= ?
-      ORDER BY total DESC
-      LIMIT ?
-    `).all(minTotal, limit) as Array<{
-      action_name: string;
-      total: number;
-      succeeded: number;
-      failed: number;
-      avg_duration_ms: number;
-      max_duration_ms: number;
-      min_duration_ms: number;
-    }>;
-
-    const analytics = rows.map((r) => ({
-      action_name: r.action_name,
-      total: r.total,
-      succeeded: r.succeeded,
-      failed: r.failed,
-      success_rate: r.total > 0 ? Math.round((r.succeeded / r.total) * 100) : 0,
-      avg_duration_ms: Math.round(r.avg_duration_ms),
-      max_duration_ms: r.max_duration_ms,
-      min_duration_ms: r.min_duration_ms,
-    }));
-
-    return { analytics, total_actions: analytics.length };
-  });
-
   // ── Provider status ─────────────────────────────────────────────
 
   app.get("/providers", async () => {

@@ -7,7 +7,6 @@ import { actionRoutes } from "./actions/routes.js";
 import { rulesRoutes, seedDefaultRules } from "./rules/routes.js";
 import { classifyRoutes } from "./api/classify.js";
 import { policyRoutes, seedDefaultPolicies } from "./api/policy.js";
-import { mockPlatformRoutes } from "./api/mockPlatform.js";
 import { seedDefaultActions } from "./actions/defaults.js";
 import { seedActionSchemas } from "./actions/actionSchemas.js";
 import { closeDb } from "./db.js";
@@ -16,7 +15,6 @@ import { providerRoutes } from "./providers/routes.js";
 import { registerOpenAPI } from "./api/openapi.js";
 import { registerAuth } from "./middleware/auth.js";
 import { registerRateLimit } from "./middleware/rateLimit.js";
-import { apiKeyRoutes } from "./middleware/apiKeyRoutes.js";
 
 const PORT = Number(process.env.PORT ?? 3210);
 const HOST = process.env.HOST ?? "0.0.0.0";
@@ -40,8 +38,6 @@ async function main(): Promise<void> {
   await app.register(classifyRoutes);
   await app.register(policyRoutes);
   await app.register(providerRoutes);
-  await app.register(apiKeyRoutes);
-  await app.register(mockPlatformRoutes);
 
   seedDefaultActions();
   seedActionSchemas();
