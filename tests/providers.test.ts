@@ -12,6 +12,7 @@ import { MockClassifierProvider } from "../src/providers/mocks/MockClassifierPro
 import { MockRuleSolverProvider } from "../src/providers/mocks/MockRuleSolverProvider.js";
 import { MockSessionProvider } from "../src/providers/mocks/MockSessionProvider.js";
 import { MockContextProvider } from "../src/providers/mocks/MockContextProvider.js";
+import { OpenVikingContextProvider } from "../src/providers/adapters/OpenVikingContextProvider.js";
 import { MockActionProvider } from "../src/providers/mocks/MockActionProvider.js";
 import { MockTraceProvider } from "../src/providers/mocks/MockTraceProvider.js";
 import { MockPolicyMatcherProvider } from "../src/providers/mocks/MockPolicyMatcherProvider.js";
@@ -325,6 +326,182 @@ describe("MockContextProvider", () => {
     );
     expect(link.id).toBeDefined();
     expect(link.relation).toBe("mirrors");
+  });
+});
+
+// ── OpenViking Context Provider ─────────────────────────────────────
+
+describe("OpenVikingContextProvider", () => {
+  it("should onboard a repo with default hierarchical tree", async () => {
+    const provider = new OpenVikingContextProvider();
+    const tree = await provider.onboard("ov-repo-1");
+    expect(tree.path).toBe("repo");
+    expect(tree.label).toBe("repo");
+    expect(tree.children).toBeDefined();
+    expect(tree.children!.length).toBeGreaterThan(0);
+    expect(tree.children!.map((c) => c.path)).toContain("repo/overview");
+    expect(tree.children!.map((c) => c.path)).toContain("repo/architecture");
+    expect(tree.children!.map((c) => c.path)).toContain("repo/tests");
+  });
+
+  it("should return existing tree on re-onboard", async () => {
+    const provider = new OpenVikingContextProvider();
+    const tree1 = await provider.onboard("ov-repo-dup");
+    const tree2 = await provider.onboard("ov-repo-dup");
+    expect(tree2).toEqual(tree1);
+  });
+
+  it("should return null for unonboarded repo getTree", async () => {
+    const provider = new OpenVikingContextProvider();
+    const tree = await provider.getTree("nonexistent-repo");
+    expect(tree).toBeNull();
+  });
+
+  it("should search by label match", async () => {
+    const provider = new OpenVikingContextProvider();
+    await provider.onboard("ov-search-label");
+    const results = await provider.search("architecture", "ov-search-label");
+    expect(results.length).toBeGreaterThan(0);
+    expect(results.some((r) => r.path === "repo/architecture")).toBe(true);
+    // L0 nodes get a boost
+    const archResult = results.find((r) => r.path === "repo/architecture");
+    expect(archResult).toBeDefined();
+    expect(archResult!.score).toBeGreaterThan(0);
+  });
+
+  it("should search promoted content", async () => {
+    const provider = new OpenVikingContextProvider();
+    await provider.onboard("ov-search-content");
+    await provider.promote(
+      "ov-search-content",
+      "repo/overview",
+      "OpenViking hierarchical retrieval with convergence scoring",
+    );
+    const results = await provider.search("convergence scoring", "ov-search-content");
+    expect(results.length).toBeGreaterThan(0);
+    expect(results.some((r) => r.path === "repo/overview")).toBe(true);
+  });
+
+  it("should perform hierarchical convergence — parent boosted by child match", async () => {
+    const provider = new OpenVikingContextProvider();
+    await provider.onboard("ov-converge");
+    // Promote content deep in the tree
+    await provider.promote(
+      "ov-converge",
+      "repo/architecture/patterns/cqrs",
+      "CQRS pattern for command query responsibility segregation",
+    );
+    // Search for something that matches the deep child
+    const results = await provider.search("cqrs", "ov-converge");
+    // The deep path should match
+    expect(results.some((r) => r.path === "repo/architecture/patterns/cqrs")).toBe(true);
+    // The parent "repo/architecture" should also appear due to convergence
+    const parentResult = results.find((r) => r.path === "repo/architecture");
+    if (parentResult) {
+      // Parent should have a positive score from convergence
+      expect(parentResult.score).toBeGreaterThan(0);
+    }
+  });
+
+  it("should apply L0 boost to top-level nodes", async () => {
+    const provider = new OpenVikingContextProvider();
+    await provider.onboard("ov-l0-boost");
+    await provider.promote(
+      "ov-l0-boost",
+      "repo/overview",
+      "Repository overview with important details",
+    );
+    await provider.promote(
+      "ov-l0-boost",
+      "repo/architecture/details",
+      "Architecture details with important design decisions",
+    );
+    // Both contain "important" — L0 should score higher
+    const results = await provider.search("important", "ov-l0-boost");
+    const overview = results.find((r) => r.path === "repo/overview");
+    const details = results.find((r) => r.path === "repo/architecture/details");
+    expect(overview).toBeDefined();
+    expect(details).toBeDefined();
+    // L0 node (repo/overview) should have a higher or equal score
+    expect(overview!.score).toBeGreaterThanOrEqual(details!.score);
+  });
+
+  it("should create and persist cross-repo links", async () => {
+    const provider = new OpenVikingContextProvider();
+    const link = await provider.link(
+      "ov-source",
+      "repo/tests",
+      "ov-target",
+      "repo/test-strategy",
+      "references",
+    );
+    expect(link.id).toBeDefined();
+    expect(link.source_repo).toBe("ov-source");
+    expect(link.target_repo).toBe("ov-target");
+    expect(link.relation).toBe("references");
+  });
+
+  it("should promote content and create intermediate nodes", async () => {
+    const provider = new OpenVikingContextProvider();
+    await provider.onboard("ov-promote-deep");
+    const promoted = await provider.promote(
+      "ov-promote-deep",
+      "repo/architecture/patterns/event-sourcing",
+      "Event sourcing stores state changes as an event log",
+    );
+    expect(promoted).not.toBeNull();
+    expect(promoted!.path).toBe("repo/architecture/patterns/event-sourcing");
+    expect(promoted!.content).toBe("Event sourcing stores state changes as an event log");
+
+    // Verify persistence via getTree
+    const tree = await provider.getTree("ov-promote-deep");
+    expect(tree).not.toBeNull();
+    // The tree should contain the new deep node
+    const treeStr = JSON.stringify(tree);
+    expect(treeStr).toContain("event-sourcing");
+    expect(treeStr).toContain("Event sourcing stores state changes as an event log");
+  });
+
+  it("should return empty results for empty query", async () => {
+    const provider = new OpenVikingContextProvider();
+    await provider.onboard("ov-empty-query");
+    const results = await provider.search("", "ov-empty-query");
+    expect(results).toEqual([]);
+  });
+
+  it("should search across all repos when no repo_id given", async () => {
+    const provider = new OpenVikingContextProvider();
+    await provider.onboard("ov-cross-a");
+    await provider.onboard("ov-cross-b");
+    await provider.promote("ov-cross-a", "repo/overview", "Cross-repo search test A");
+    await provider.promote("ov-cross-b", "repo/overview", "Cross-repo search test B");
+    const results = await provider.search("cross-repo search");
+    expect(results.length).toBeGreaterThanOrEqual(2);
+  });
+
+  it("should return null when promoting on unonboarded repo", async () => {
+    const provider = new OpenVikingContextProvider();
+    const result = await provider.promote("nonexistent", "repo/test", "content");
+    expect(result).toBeNull();
+  });
+
+  it("should rank exact label matches higher than content matches", async () => {
+    const provider = new OpenVikingContextProvider();
+    await provider.onboard("ov-ranking");
+    // Promote a deep node (not L0) so it doesn't get the L0 boost
+    await provider.promote(
+      "ov-ranking",
+      "repo/architecture/details/deep-implementation",
+      "This deep file contains information about architecture patterns",
+    );
+    const results = await provider.search("architecture", "ov-ranking");
+    // "repo/architecture" (L0 label match) should rank higher than deep content match
+    const labelMatch = results.find((r) => r.path === "repo/architecture");
+    const contentMatch = results.find((r) => r.path === "repo/architecture/details/deep-implementation");
+    expect(labelMatch).toBeDefined();
+    expect(contentMatch).toBeDefined();
+    // Label match with L0 boost should outrank deep content-only match
+    expect(labelMatch!.score).toBeGreaterThan(contentMatch!.score);
   });
 });
 

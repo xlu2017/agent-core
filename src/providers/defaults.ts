@@ -4,6 +4,7 @@ import { Mem0MemoryProvider } from "./adapters/Mem0MemoryProvider.js";
 import { Mem0RestTransport } from "../memory/transports/Mem0RestTransport.js";
 import { Mem0EmbeddedTransport } from "../memory/transports/Mem0EmbeddedTransport.js";
 import { MockEmbeddingProvider } from "./adapters/MockEmbeddingProvider.js";
+import { OpenVikingContextProvider } from "./adapters/OpenVikingContextProvider.js";
 import {
   OpenAICompatibleEmbeddingProvider,
   getEmbeddingConfig,
@@ -37,7 +38,12 @@ export function registerDefaultProviders(): void {
   registerProvider("memory", memoryProvider);
 
   registerProvider("session", new MockSessionProvider());
-  registerProvider("context", new MockContextProvider());
+  registerProvider(
+    "context",
+    process.env.CONTEXT_PROVIDER === "openviking"
+      ? new OpenVikingContextProvider()
+      : new MockContextProvider(),
+  );
   registerProvider("trace", new MockTraceProvider());
   registerProvider(
     "classifier",
