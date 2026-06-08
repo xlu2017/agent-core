@@ -94,16 +94,19 @@ export async function validatePlanDeterministic(
     errors.push(`Plan contains "commit" but commit is not in allowed_actions.`);
   }
 
-  // 5. Semantic ordering: run_tests must come after at least one edit action
+  // 5. Semantic ordering: run_tests should come after at least one edit action
+  // This is a warning, not a hard error — some tasks legitimately run tests first
+  // (e.g., "run the tests and report results", "check test status before editing").
   const editActions = new Set(["apply_patch", "write_file"]);
   let hasEdit = false;
   for (let i = 0; i < plan.steps.length; i++) {
     const step = plan.steps[i]!;
     if (editActions.has(step.action_name)) hasEdit = true;
     if (step.action_name === "run_tests" && !hasEdit) {
-      errors.push(
-        `Step ${i}: run_tests appears before any edit action (apply_patch/write_file). Tests should only run after changes are made.`,
-      );
+      warnings.push({
+        source: "validator",
+        message: `Step ${i}: run_tests appears before any edit action (apply_patch/write_file). Tests should only run after changes are made.`,
+      });
     }
   }
 
