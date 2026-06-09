@@ -89,6 +89,15 @@ export function executeMockAction(
         ],
       };
 
+    case "open_terminal":
+      return {
+        terminal: "opened",
+        command: (params.command as string) ?? null,
+        working_directory: (params.working_directory as string) ?? null,
+        title: (params.title as string) ?? null,
+        note: "[mock] Terminal window opened on desktop",
+      };
+
     default:
       return {
         action: actionName,
