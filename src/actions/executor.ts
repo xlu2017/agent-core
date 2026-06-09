@@ -89,6 +89,14 @@ export function executeMockAction(
         ],
       };
 
+    case "open_terminal":
+      return {
+        terminal: "opened",
+        session_id: `term_${Date.now()}`,
+        cwd: (params.cwd as string) ?? process.cwd(),
+        note: "[mock] Terminal session opened",
+      };
+
     default:
       return {
         action: actionName,

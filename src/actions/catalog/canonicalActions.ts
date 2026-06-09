@@ -430,6 +430,21 @@ const open_remote_desktop = action(
   },
 );
 
+const open_terminal = action(
+  "open_terminal",
+  "browser_desktop",
+  "Open a terminal emulator or shell session for command-line interaction",
+  z.object({
+    command: z.string().optional(),
+    cwd: z.string().optional(),
+    keep_open: z.boolean().optional(),
+  }),
+  {
+    side_effects: ["process", "desktop"],
+    planner_guidance: "Use when the task requires an interactive terminal session for running commands, debugging, or exploring the environment.",
+  },
+);
+
 // --- Services ---
 
 const list_services = action(
@@ -758,6 +773,7 @@ export const CANONICAL_ACTIONS: CanonicalAction[] = [
   browser_type,
   browser_screenshot,
   open_remote_desktop,
+  open_terminal,
   // Services
   list_services,
   inspect_service_status,
