@@ -101,7 +101,7 @@ describe("Canonical catalog completeness", () => {
   it("every action has a valid category", () => {
     const validCategories = [
       "context", "repo", "files", "validation",
-      "browser_desktop", "services", "git_pr", "control",
+      "browser_desktop", "services", "git_pr", "terminal", "control",
     ];
     for (const action of CANONICAL_ACTIONS) {
       expect(validCategories).toContain(action.category);

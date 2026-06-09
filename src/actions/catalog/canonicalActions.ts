@@ -22,6 +22,7 @@ export type ActionCategory =
   | "browser_desktop"
   | "services"
   | "git_pr"
+  | "terminal"
   | "control";
 
 export type RiskLevel = "low" | "medium" | "high" | "critical";
@@ -430,6 +431,45 @@ const open_remote_desktop = action(
   },
 );
 
+// --- Terminal ---
+
+const open_terminal = action(
+  "open_terminal",
+  "terminal",
+  "Open a terminal session in the workspace for running shell commands interactively",
+  z.object({
+    cwd: z.string().optional(),
+    command: z.string().optional(),
+    keep_open: z.boolean().optional(),
+  }),
+  {
+    side_effects: ["process"],
+    planner_guidance: "Use when the task requires interactive shell access, long-running processes, or commands outside the allowlist. Prefer run_command for simple, known-safe commands.",
+  },
+);
+
+const close_terminal = action(
+  "close_terminal",
+  "terminal",
+  "Close an open terminal session",
+  z.object({
+    session_id: z.string().optional(),
+    force: z.boolean().optional(),
+  }),
+  {
+    side_effects: ["process"],
+    planner_guidance: "Use to clean up terminal sessions after interactive work is complete.",
+  },
+);
+
+const list_terminal_sessions = action(
+  "list_terminal_sessions",
+  "terminal",
+  "List all open terminal sessions",
+  z.object({}),
+  { planner_guidance: "Use to discover active terminal sessions before interacting with them." },
+);
+
 // --- Services ---
 
 const list_services = action(
@@ -758,6 +798,10 @@ export const CANONICAL_ACTIONS: CanonicalAction[] = [
   browser_type,
   browser_screenshot,
   open_remote_desktop,
+  // Terminal
+  open_terminal,
+  close_terminal,
+  list_terminal_sessions,
   // Services
   list_services,
   inspect_service_status,
