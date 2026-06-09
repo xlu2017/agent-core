@@ -48,7 +48,7 @@ describe("Canonical catalog completeness", () => {
     "identify_relevant_tests",
     // Browser/Desktop
     "open_browser_url", "inspect_route_or_response", "browser_click", "browser_type",
-    "browser_screenshot", "open_remote_desktop",
+    "browser_screenshot", "open_remote_desktop", "open_terminal",
     // Services
     "list_services", "inspect_service_status", "update_latest_from_github",
     "restart_service", "start_service", "stop_service",

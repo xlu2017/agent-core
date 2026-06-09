@@ -76,6 +76,7 @@ The catalog is defined in `src/actions/catalog/canonicalActions.ts`. Every actio
 | `browser_type` | low | no | Type text (uses `secret_ref` for secrets) |
 | `browser_screenshot` | low | no | Take a screenshot |
 | `open_remote_desktop` | low | no | Open a remote desktop session |
+| `open_terminal` | low | no | Open a terminal window on the desktop |
 
 ### Services
 | Action | Risk | Approval | Description |

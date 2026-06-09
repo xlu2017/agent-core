@@ -430,6 +430,20 @@ const open_remote_desktop = action(
   },
 );
 
+const open_terminal = action(
+  "open_terminal",
+  "browser_desktop",
+  "Open a terminal window on the desktop",
+  z.object({
+    command: z.string().optional(),
+    working_directory: z.string().optional(),
+  }),
+  {
+    side_effects: ["desktop", "process"],
+    planner_guidance: "Use to open a terminal for running commands interactively or inspecting the system.",
+  },
+);
+
 // --- Services ---
 
 const list_services = action(
@@ -758,6 +772,7 @@ export const CANONICAL_ACTIONS: CanonicalAction[] = [
   browser_type,
   browser_screenshot,
   open_remote_desktop,
+  open_terminal,
   // Services
   list_services,
   inspect_service_status,
