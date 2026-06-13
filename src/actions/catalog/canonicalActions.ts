@@ -6,6 +6,7 @@
  */
 
 import { z, type ZodType } from "zod";
+import { APP_AUTOMATION_ACTIONS } from "./appAutomationActions.js";
 import { SESSION_GRAPH_ACTIONS } from "./sessionGraphActions.js";
 
 export type ActionCategory =
@@ -17,6 +18,7 @@ export type ActionCategory =
   | "browser_desktop"
   | "services"
   | "git_pr"
+  | "app_automation"
   | "control";
 
 export type RiskLevel = "low" | "medium" | "high" | "critical";
@@ -193,6 +195,7 @@ export const CANONICAL_ACTIONS: CanonicalAction[] = [
   check_pr_status,
   check_ci_status,
   merge_pr,
+  ...APP_AUTOMATION_ACTIONS,
   classify_task,
   ask_user,
   request_approval,
