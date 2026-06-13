@@ -2,7 +2,7 @@ import type { LLMClient } from "../../llm/LLMClient.js";
 import type { ActionDefinition, ActionKnowledgeProvider, ActionRecommendation, ActionRecommendationContext } from "../../providers/ActionKnowledgeProvider.js";
 import { NextActionWithSessionUpdateSchema, type NextActionWithSessionUpdate } from "../../sessions/sessionUpdateProposal.js";
 import { coordinateRecommendNext } from "./planCoordinator.js";
-import { buildRecommendNextPrompt } from "./promptBuilder.js";
+import { buildRecommendNextPrompt } from "./promptBuilderWithNarration.js";
 import { graphPromptRouteFallbackRecommendation } from "./graphPromptRouteFallback.js";
 import type { RecommendNextWithPlanOutput } from "./types.js";
 
