@@ -1,3 +1,4 @@
+import { providerNeutralActionPromptPolicy } from "./providerNeutralActionPromptPolicy.js";
 import type { RecommendNextPromptInput, RecommendNextPromptMessages, RecommendNextPromptSource } from "./types.js";
 
 function safeJson(value: unknown): string {
@@ -50,6 +51,11 @@ export function buildRecommendNextPrompt(input: RecommendNextPromptInput): Recom
     ...(routingGuidance ? [routingGuidance] : []),
     ...(input.visible_actions && input.visible_actions.length > 0 ? [{ name: "visible_tasks", priority: 92, content: input.visible_actions }] : []),
     {
+      name: "provider_neutral_app_action_policy",
+      priority: 91,
+      content: providerNeutralActionPromptPolicy(),
+    },
+    {
       name: "available_tasks",
       priority: 90,
       content: actionCatalog.map((action) => ({
@@ -91,6 +97,10 @@ export function buildRecommendNextPrompt(input: RecommendNextPromptInput): Recom
           "Only choose task_name values from available_tasks, except stop may use task_name=stop.",
           "If visible_tasks is present, no other task names are available.",
           "If visible_tasks contains only session.route_prompt, this is a routing pass; return decision=execute and task_name=session.route_prompt.",
+          "For app automation, use only provider-neutral root task names from available_tasks, such as email.create, email.search, email.send, message.send, issue.create, calendar_event.create, repository.search, spreadsheet_row.append, page.create, contact.create, browser_task.perform, or visual_browser_task.perform.",
+          "Do not use provider-specific or app-specific names such as gmail.create_email, outlook.create_email, slack.send_message, discord.send_message, github.create_issue, jira.create_issue, or google_calendar.create_event as task_name.",
+          "Put provider specificity in params using the correct provider parameter, for example email_provider, message_provider, issue_provider, calendar_provider, repository_provider, spreadsheet_provider, page_provider, contact_provider, or browser_provider.",
+          "If a legacy app catalog action is useful for downstream routing, put it in params.catalog_action_id. If an execution vendor route is preferred, put it in params.automation_vendor.",
           "Certainty means confidence that the selected next task is the right next task, not confidence that the whole user goal is solved.",
           "Minimum certainty thresholds: read_only >= 0.55, execution >= 0.75, modification >= 0.85, external_side_effect >= 0.95 with explicit platform approval.",
           "If certainty is below the threshold for the selected task stakes, choose a lower-stakes find_out_more task or ask_user.",
