@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import type { LLMClient, LLMMessage, LLMResponse } from "../src/llm/LLMClient.js";
+import type { LLMClient, LLMResponse } from "../src/llm/LLMClient.js";
 import type { ActionSchema } from "../src/providers/ActionProvider.js";
 import type { ActionDefinition, ActionKnowledgeProvider, ActionRecommendationContext } from "../src/providers/ActionKnowledgeProvider.js";
 import { recommendNext } from "../src/actions/recommend-next/engine.js";
@@ -14,7 +14,7 @@ const actions: ActionDefinition[] = [
 class StaticLlm implements LLMClient {
   readonly provider = "static";
   constructor(private readonly content: string) {}
-  async chat(_messages: LLMMessage[]): Promise<LLMResponse> {
+  async chat(): Promise<LLMResponse> {
     return { content: this.content, usage: null, model: "static", latency_ms: 0 };
   }
 }

@@ -20,7 +20,7 @@ import {
 } from "./sessionTypes.js";
 
 const enumSchema = <T extends readonly [string, ...string[]]>(values: T) => z.enum(values);
-const LooseObjectSchema = z.record(z.unknown());
+const LooseObjectSchema = z.object({}).passthrough();
 
 export const SessionKindSchema = enumSchema(SESSION_KINDS);
 export const SessionStatusSchema = enumSchema(SESSION_STATUSES);
