@@ -15,7 +15,7 @@ function appAction(
 ): CanonicalAction {
   return {
     name,
-    category: "app_automation",
+    category: "services",
     description,
     zodSchema,
     params_json_schema: {},
