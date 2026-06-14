@@ -15,7 +15,7 @@ export function buildRecommendNextPrompt(input: RecommendNextPromptInput): Recom
       if (index !== 0 || message.role !== "system") return message;
       return {
         ...message,
-        content: `${message.content}\nFor every non-stop next task, include params.narration: short frontend-facing prose that describes the immediate next action without claiming completion. Narration must not mention model names, model providers, or internal routing services.`,
+        content: `${message.content}\nEvery next task, including stop, can include params.narration: short frontend-facing prose that describes the immediate next action or why work is stopping without claiming unfinished work is complete. Narration must not mention model names, model providers, or internal routing services.`,
       };
     }),
   };
