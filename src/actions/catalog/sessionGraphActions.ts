@@ -76,7 +76,7 @@ export const session_route_prompt = graphAction(
   {
     risk: "low",
     side_effects: [],
-    planner_guidance: "Use for graph-session chat follow-ups. Choose continue_active for normal execution under the current goal, question_only for explanatory prompts, create_child_goal for explicit subtasks in the same context, and create_sibling_goal for explicit unrelated/new goals. Include narration for the selected next suggested action so the frontend can show immediate prose while the platform proceeds.",
+    planner_guidance: "Use for graph-session chat follow-ups. Choose continue_active for execution, validation, implementation, and any repo-context explanation that must inspect repository contents before answering. Choose question_only only for general chat or explanation where no repository lookup, work item, or new goal is needed. Choose create_child_goal for explicit subtasks in the same context and create_sibling_goal for explicit unrelated/new goals. Include narration for the selected next suggested action so the frontend can show immediate prose while the platform proceeds.",
     output_json_schema: {
       type: "object",
       properties: {
