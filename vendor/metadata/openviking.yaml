@@ -1,7 +1,7 @@
 name: openviking
 upstream: https://github.com/volcengine/OpenViking
-commit_sha: HEAD
-license: Apache-2.0
+commit_sha: b8e88959f3ab437b4d08514eceaa7221cca470dc
+license: AGPL-3.0-only
 category: context
 vendor_path: vendor/providers/context/openviking
 
@@ -24,6 +24,8 @@ code_patterns_to_adapt:
   - Cross-document and cross-repo linking
 
 risks_and_caveats:
+  - AGPL-3.0 — source is cloned locally by the vendor script only, never committed
+    or redistributed via this repo; do not copy code from it, treat as reference only
   - Large repo — not committed to git, reproduced via vendor script
   - Production indexing infrastructure not relevant to phase 1
   - May have limited English documentation

@@ -1,6 +1,6 @@
 name: gemini-cli
 upstream: https://github.com/google-gemini/gemini-cli
-commit_sha: HEAD
+commit_sha: 62bab5b232c15b925d31e655ce844ab939c882b7
 license: Apache-2.0
 category: routing
 vendor_path: vendor/providers/routing/gemini-cli

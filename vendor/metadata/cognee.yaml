@@ -1,6 +1,6 @@
 name: cognee
 upstream: https://github.com/topoteretes/cognee
-commit_sha: HEAD
+commit_sha: 8853378eae5366addb064e758e560a456146ae1a
 license: Apache-2.0
 category: knowledge
 vendor_path: vendor/providers/knowledge/cognee

@@ -1,6 +1,6 @@
 name: mem0
 upstream: https://github.com/mem0ai/mem0
-commit_sha: HEAD  # pinned at vendor time by vendor_providers.sh
+commit_sha: f1791daa86d469249c9b002f62644d58a1eb96a0
 license: Apache-2.0
 category: memory
 vendor_path: vendor/providers/memory/mem0

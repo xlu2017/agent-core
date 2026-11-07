@@ -10,7 +10,8 @@ dist/
 benchmark-results.json
 retrieval-benchmark-results.json
 parity-report.json
-benchmark-results/
+benchmark-results/*
+!benchmark-results/README.md
 # Vendored provider sources are cloned by scripts/vendor_providers.sh, not committed
 vendor/providers/
 # Generated benchmark artifacts

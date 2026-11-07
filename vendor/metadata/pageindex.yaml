@@ -1,6 +1,6 @@
 name: pageindex
 upstream: https://github.com/VectifyAI/PageIndex
-commit_sha: HEAD
+commit_sha: 2ac8694bf8fe89a3840dda9bdb88db5119b77fc4
 license: MIT
 category: search
 vendor_path: vendor/providers/search/pageindex

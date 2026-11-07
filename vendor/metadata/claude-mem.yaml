@@ -1,7 +1,7 @@
 name: claude-mem
 upstream: https://github.com/thedotmack/claude-mem
-commit_sha: HEAD
-license: MIT
+commit_sha: 68905ccd9f2fa4dc1131df94f9195266aee36053
+license: Apache-2.0
 category: knowledge
 vendor_path: vendor/providers/knowledge/claude-mem
 

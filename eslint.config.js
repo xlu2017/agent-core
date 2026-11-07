@@ -7,4 +7,12 @@ export default tseslint.config(
   {
     ignores: ["dist/", "vendor/", "node_modules/"],
   },
+  {
+    rules: {
+      "@typescript-eslint/no-unused-vars": [
+        "error",
+        { argsIgnorePattern: "^_", varsIgnorePattern: "^_" },
+      ],
+    },
+  },
 );

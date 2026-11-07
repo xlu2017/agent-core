@@ -1,6 +1,6 @@
 name: parlant
 upstream: https://github.com/emcie-co/parlant
-commit_sha: HEAD
+commit_sha: a7b957ce88f594c1743a47dc1f567f8e7aaed9d9
 license: Apache-2.0
 category: policy
 vendor_path: vendor/providers/policy/parlant

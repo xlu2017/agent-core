@@ -6,24 +6,24 @@ This repo vendors upstream provider source code for offline review and reference
 
 ## Approach
 
-We use `scripts/vendor_providers.sh` to clone each provider at a pinned commit SHA with `--depth 1` (shallow clone), then remove the `.git` directory to produce a source snapshot.
+We use `scripts/vendor_providers.sh` to clone each provider at a pinned commit SHA with `--depth 1` (shallow clone), then remove the `.git` directory to produce a source snapshot. After cloning, the script writes the resolved SHA into `vendor/metadata/<name>.yaml`.
 
-### Size exceptions
+### Provider snapshots are not committed
 
-Several providers are too large to vendor as full source snapshots in this repo (hundreds of MB to GB). For these, the vendor script clones them but they are listed in `.gitignore` and not committed. The script is reproducible: anyone can run it to reconstruct the full vendor directory offline.
+All provider source snapshots under `vendor/providers/` are listed in `.gitignore` and cloned by the script — none are committed to this repo. Several of the repos are large (hundreds of MB to GB), and some have copyleft licenses (e.g. OpenViking is AGPL-3.0) that we do not want to redistribute. The script is reproducible: anyone can run it to reconstruct the full vendor directory offline.
 
-**Large repos (cloned by script, not committed):**
+**Cloned by script, not committed:**
 - `mem0ai/mem0` — includes embeddings, Docker images, and UI assets
 - `letta-ai/letta` — full agent framework with many dependencies
 - `chroma-core/chroma` — full vector database server
 - `emcie-co/parlant` — full conversation engine
 - `topoteretes/cognee` — full knowledge pipeline
-- `volcengine/OpenViking` — large retrieval framework
+- `volcengine/OpenViking` — large retrieval framework (AGPL-3.0 — reference only)
 - `google-gemini/gemini-cli` — full CLI tool with bundled assets
-
-**Small repos (vendored and committed if feasible):**
 - `thedotmack/claude-mem` — small reference implementation
 - `VectifyAI/PageIndex` — small document retrieval reference
+
+Note: `vendor/mem0/` (embedded benchmark worker) and `vendor/memory-benchmarks/` (benchmark harness) are committed to this repo and are not managed by the vendor script.
 
 ### Metadata
 
@@ -43,7 +43,7 @@ The script is idempotent — it skips providers that are already cloned.
 
 ## Updating a provider
 
-1. Update the commit SHA in `scripts/vendor_providers.sh`
-2. Update the corresponding `vendor/metadata/<name>.yaml`
+1. Update the pinned ref (4th field) in `scripts/vendor_providers.sh`
+2. Update the corresponding `vendor/metadata/<name>.yaml` (the script refreshes `commit_sha` automatically on clone)
 3. Delete the old vendor directory: `rm -rf vendor/providers/<category>/<name>`
 4. Re-run: `bash scripts/vendor_providers.sh`

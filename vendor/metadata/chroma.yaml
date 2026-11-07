@@ -1,6 +1,6 @@
 name: chroma
 upstream: https://github.com/chroma-core/chroma
-commit_sha: HEAD
+commit_sha: 1a3ac2c7c623adbd03ed2508dc27b98cdf26016d
 license: Apache-2.0
 category: search
 vendor_path: vendor/providers/search/chroma

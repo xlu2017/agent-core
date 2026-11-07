@@ -1,6 +1,6 @@
 name: letta
 upstream: https://github.com/letta-ai/letta
-commit_sha: HEAD
+commit_sha: 8816d3a8516893bfdc0fa14bfb1235226012e295
 license: Apache-2.0
 category: memory
 vendor_path: vendor/providers/memory/letta

@@ -1,5 +1,7 @@
 # Verification Transcript
 
+> **Historical / superseded** — archived snapshot of a point-in-time verification run; kept for reference only. Do not treat as current status.
+
 ## 1. Local command transcript
 
 ### pnpm typecheck

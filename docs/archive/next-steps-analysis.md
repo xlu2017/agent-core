@@ -1,5 +1,7 @@
 # agent-core: Current State & Next Steps Analysis
 
+> **Historical / superseded** — archived snapshot of a point-in-time analysis (base-init @ 51b3c1b0); kept for reference only. Do not treat as current status.
+
 ## Current State (base-init @ 51b3c1b0)
 
 ### What's built
